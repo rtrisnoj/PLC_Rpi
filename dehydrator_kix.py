@@ -25,8 +25,8 @@ dotenv.load_dotenv(dotenv_file)
 ## global variables
 machine_status = False
 
-impact_temp_loop = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-flameback_loop = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+impact_temp_loop = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+flameback_loop = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 impact_temp = 0
 flameback_temp = 0
 
@@ -507,17 +507,21 @@ def read_inputs():
             safety_cutoff()
             sg.popup_non_blocking("An infeed fault has occured, operation has been halted")
 
+    # set the moving average length
+    ma_length = 20
     ## Get current flameback temp
+    if len(flameback_loop) >= ma_length:
+        flameback_loop.pop(0) # remove oldest data
     flameback_loop.append(rpiplc.analog_read(os.environ["Flameback_temp_input"]) * 1.6 / 3)
-    flameback_loop.pop(0)
     flameback_temp = sum(flameback_loop) / len(flameback_loop)
     # print(flameback_loop)
     # Update GUI for flameback temperature
     window["-Flameback_temp-"].update(round(flameback_temp, 1))
 
     # Update current impact temperature
+    if len(impact_temp_loop) >= ma_length:
+        impact_temp_loop.pop(0) # remove oldest data
     impact_temp_loop.append(rpiplc.analog_read(os.environ["Impact_temp_input"]) * 1.6 / 3)
-    impact_temp_loop.pop(0)
     impact_temp = sum(impact_temp_loop) / len(impact_temp_loop)
     window["-Impact_temp-"].update(round(impact_temp, 1))
 
