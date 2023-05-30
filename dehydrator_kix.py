@@ -25,8 +25,8 @@ dotenv.load_dotenv(dotenv_file)
 ## global variables
 machine_status = False
 
-impact_temp_loop = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-flameback_loop = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+impact_temp_loop = [0]*30
+flameback_loop = [0]*30
 impact_temp = 0
 flameback_temp = 0
 
@@ -508,7 +508,7 @@ def read_inputs():
             sg.popup_non_blocking("An infeed fault has occured, operation has been halted")
 
     # set the moving average length
-    ma_length = 20
+    ma_length = 30
     ## Get current flameback temp
     if len(flameback_loop) >= ma_length:
         flameback_loop.pop(0) # remove oldest data
@@ -531,6 +531,8 @@ def read_inputs():
         if impact_temp >= 400 or fire:
             safety_cutoff()
             fire = True
+            sg.popup_non_blocking("Overtemperature, Safety Cut off trigger")
+
         elif not fire or fire and impact_temp < 250:
             fire = False
             Al_status = False
