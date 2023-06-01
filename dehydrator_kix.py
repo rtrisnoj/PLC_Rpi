@@ -672,10 +672,24 @@ def main():
         elif event == '-Status-':
             if not machine_status:
                 if not fault_check():
+                    # reset variables
+                    Al_status = False
+                    F_status = False
+                    Ag_status = False
+                    B_status = False
+                    I_status = False
                     window["-Status-"].update("Turning ON")
+                    sg.Popup("Please wait...", "Machine is turning on.", non_blocking=False)
                     window.perform_long_operation(turn_machine_on, "-Machine_on-")
             elif machine_status:
+                # reset variables
+                Al_status = False
+                F_status = False
+                Ag_status = False
+                B_status = False
+                I_status = False
                 window["-Status-"].update("Turning OFF")
+                sg.Popup("Please wait...", "Machine is turning off.", non_blocking=False)
                 window.perform_long_operation(turn_machine_off, "-Machine_off-")
 
         elif event == '-Machine_on-':
