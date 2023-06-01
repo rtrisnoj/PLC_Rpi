@@ -51,12 +51,18 @@ Ir_status = False
 
 fault_lowhigh = rpiplc.HIGH
 
+# Define a minimum window size
+min_w, min_h = 800, 600
+
 window_sizing = sg.Window("testing", layout=[[sg.Text("Test")]], finalize=True, alpha_channel=0, )
 window_sizing.Maximize()
-w, h = sg.Window.get_screen_dimensions(window_sizing)
+
+# Get screen dimensions
+screen_w, screen_h = sg.Window.get_screen_dimensions(window_sizing)
 window_sizing.close()
-w -= 40
-h -= 70
+# Compute final width and height, considering minimum size
+w = max(screen_w - 40, min_w)
+h = max(screen_h - 70, min_h)
 
 generic_text_size = (20, 2)
 generic_text_font = ("calibri", 14)
