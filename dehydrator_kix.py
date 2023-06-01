@@ -647,6 +647,7 @@ def main():
     global I_fault
     global Fb_fault
 
+    is_busy = False
     machine_status = False
     pid = PID(int(os.environ["P_controller"]), int(os.environ["I_controller"]), int(os.environ["D_controller"]),
               int(os.environ["Temperature_setpoint"]))
@@ -667,404 +668,413 @@ def main():
             turn_port_on_off(B_status, "Burner_status_output", "-B_man-", "Burner")
             turn_port_on_off(I_status, "Infeed_output", "-Infeed_enable-", "Infeed")
             break
-
-        ## Turning machine On/Off
-        elif event == '-Status-':
-            if not machine_status:
-                if not fault_check():
+        # Inside your event loop
+        if not is_busy:
+            if event == '-Status-':
+                is_busy = True
+                if not machine_status:
+                    if not fault_check():
+                        # reset variables
+                        Al_status = False
+                        F_status = False
+                        Ag_status = False
+                        B_status = False
+                        I_status = False
+                        window["-Status-"].update("Turning ON")
+                        sg.Popup("Please wait...", "Machine is turning on.", non_blocking=False)
+                        window.perform_long_operation(turn_machine_on, "-Machine_on-")
+                elif machine_status:
                     # reset variables
                     Al_status = False
                     F_status = False
                     Ag_status = False
                     B_status = False
                     I_status = False
-                    window["-Status-"].update("Turning ON")
-                    sg.Popup("Please wait...", "Machine is turning on.", non_blocking=False)
-                    window.perform_long_operation(turn_machine_on, "-Machine_on-")
-            elif machine_status:
-                # reset variables
-                Al_status = False
-                F_status = False
-                Ag_status = False
-                B_status = False
-                I_status = False
-                window["-Status-"].update("Turning OFF")
-                sg.Popup("Please wait...", "Machine is turning off.", non_blocking=False)
-                window.perform_long_operation(turn_machine_off, "-Machine_off-")
+                    window["-Status-"].update("Turning OFF")
+                    sg.Popup("Please wait...", "Machine is turning off.", non_blocking=False)
+                    window.perform_long_operation(turn_machine_off, "-Machine_off-")
+        elif event == '-Machine_on-' or event == '-Machine_off-':
+            is_busy = False
+            if event == '-Machine_on-':
+                machine_status = True
+                window["-Status-"].update("Turn machine OFF")
 
-        elif event == '-Machine_on-':
-            machine_status = True
-            window["-Status-"].update("Turn machine OFF")
-
-        elif event == '-Machine_off-':
-            machine_status = False
-            window["-Status-"].update("Turn machine ON")
-
-
-        ## Data entry events
-        elif event == '-SetPointb-':
-            text = values["-SetPoint-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= int(os.environ["Max_temp"]):
-                    dotenv.set_key(dotenv_file, "Temperature_setpoint", text)
-                    pid.setpoint = number
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and " + os.environ["Max_temp"])
-
-        elif event == '-Infeed_maxb-':
-            text = values["-Infeed_max-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 100:
-                    dotenv.set_key(dotenv_file, "Infeed_max", text)
-                    pid.output_limits = (0, number)
-                    # pid.output_limits((0, number))
-                    # print("successful test")
-                else:
-                    # print("fail test")
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 100")
-
-        elif event == '-P_settingb-':
-            text = values["-P_setting-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "P_controller", "-" + text)
-                    pid.Kp = -number
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-I_settingb-':
-            text = values["-I_setting-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "I_controller", "-" + text)
-                    pid.Ki = -number
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-D_settingb-':
-            text = values["-D_setting-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "D_controller", "-" + text)
-                    pid.Kd = -number
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-Fan_settingb-':
-            text = values["-Fan_setting-"]
-            try:
-                number = int(text)
-                if number >= 40 and number <= 60:
-                    dotenv.set_key(dotenv_file, "Fan_speed", text)
-                    fan_speed()
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 40 and 60")
-
-        elif event == '-AL2Fb-':
-            text = values["-AL2F-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "Airlock_to_fan_delay_on", text)
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-F2AGb-':
-            text = values["-F2AG-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "Fan_to_agitator_delay_on", text)
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-AG2Bb-':
-            text = values["-AG2B-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "Agitator_to_burner_delay_on", text)
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-B2Ib-':
-            text = values["-B2I-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "Burner_to_Infeed_delay_off", text)
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-I2AGb-':
-            text = values["-I2AG-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "Infeed_to_agitator_off", text)
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-AG2Fb-':
-            text = values["-AG2F-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "Agitator_to_fan_delay_off", text)
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-F2ALb-':
-            text = values["-F2AL-"]
-            try:
-                number = int(text)
-                if number >= 0 and number <= 1000:
-                    dotenv.set_key(dotenv_file, "Fan_to_airlock_delay_off", text)
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 0 and 1000")
-
-        elif event == '-Fb_maxb-':
-            text = values["-Fb_max-"]
-            try:
-                number = int(text)
-                if number >= 20 and number <= 55:
-                    dotenv.set_key(dotenv_file, "Flameback_temp_max", text)
-                else:
-                    raise
-            except:
-                sg.popup_non_blocking("Please enter an integer between 20 and 55")
-
-        elif event == '-B_portb-' and F_status:
-            IO_change("Burner_status_output", values["-B_port-"])
-
-        elif event == '-Ag_portb-':
-            IO_change("Agitator_output", values["-Ag_port-"])
-
-        elif event == '-F_portb-':
-            IO_change("Fan_output", values["-F_port-"])
-
-        elif event == '-Al_portb-':
-            IO_change("Airlock_output", values["-Al_port-"])
-
-        elif event == '-Ir_portb-':
-            IO_change("Infeed_reverse_output", values["-Ir_port-"])
-
-        elif event == '-I_portb-':
-            IO_change("Infeed_output", values["-I_port-"])
-
-        elif event == '-Fs_portb-':
-            IO_change("Fan_speed_output", values["-Fs_port-"])
-
-        elif event == '-Is_portb-':
-            IO_change("Infeed_speed_output", values["-Is_port-"])
-
-        elif event == '-E_portb-':
-            IO_change("Emergency_stop", values["-E_port-"])
-
-        elif event == '-Al_f_portb-':
-            IO_change("Airlock_fault", values["-Al_f_port-"])
-
-        elif event == '-F_f_portb-':
-            IO_change("Fan_fault", values["-F_f_port-"])
-
-        elif event == '-Ag_f_portb-':
-            IO_change("Agitator_fault", values["-Ag_f_port-"])
-
-        elif event == '-Agoc_f_portb-':
-            IO_change("Over_Current_fault", values["-Agoc_f_port-"])
-
-        elif event == '-I_f_portb-':
-            IO_change("Infeed_fault", values["-I_f_port-"])
-
-        elif event == '-Im_temp_portb-':
-            IO_change("Impact_temp_input", values["-Im_temp_port-"])
-
-        elif event == '-Fb_temp_portb-':
-            IO_change("Flameback_temp_input", values["-Fb_temp_port-"])
-
-
-        ## Turn outputs On/Off
-        elif event == '-Infeed_enable-':
-            turn_port_on_off(not I_status, "Infeed_output", '-Infeed_enable-', "Infeed")
-            I_status = not I_status
-
-        elif event == '-Reverse_infeed-':
-            turn_port_on_off(not Ir_status, "Infeed_reverse_output", '-Reverse_infeed-', "Infeed Reverse")
-            sg.popup_non_blocking("Caution! Reversing infeed")
-            Ir_status = not Ir_status
-
-
-        ## Change Pages
-        elif event == '-Recipes_button-':  ## not part of scope for now
-            machine_status = True  # TODO replace with acutal code to open different page
-
-        elif event == '-Commission-':
-            password = sg.popup_get_text("Password: ", password_char='*')
-            if password and PasswordMatches(password, os.environ["password"]):
-                window["-Commission-"].update(visible=False)
-                window["-Main_menu_button-"].update(visible=True)
-                window["-Manual_button-"].update(visible=True)
-                window["-Settings_button-"].update(visible=True)
-
-                window["-Main_menu_gui-"].update(visible=False)
-                window["-Main_menu2_gui-"].update(visible=False)
-                window["-Manual_gui-"].update(visible=False)
-                window["-Settings_gui-"].update(visible=False)
-                window["-Commission2_gui-"].update(visible=True)
-                window["-Commission3_gui-"].update(visible=True)
-                window["-Commission_gui-"].update(visible=True)
-            else:
-                sg.popup_non_blocking("Sorry that password is incorrect.")
-
-        elif event == '-Settings_button-':
-            window["-Main_menu_button-"].update(visible=True)
-            window["-Manual_button-"].update(visible=True)
-            window["-Commission-"].update(visible=True)
-            window["-Settings_button-"].update(visible=False)
-
-            window["-Main_menu_gui-"].update(visible=False)
-            window["-Manual_gui-"].update(visible=False)
-            window["-Commission2_gui-"].update(visible=False)
-            window["-Commission3_gui-"].update(visible=False)
-            window["-Commission_gui-"].update(visible=False)
-            window["-Main_menu2_gui-"].update(visible=True)
-            window["-Settings_gui-"].update(visible=True)
-
-        elif event == '-Manual_button-':
-            window["-Main_menu_button-"].update(visible=True)
-            window["-Settings_button-"].update(visible=True)
-            window["-Manual_button-"].update(visible=False)
-            window["-Commission-"].update(visible=False)
-
-            window["-Main_menu_gui-"].update(visible=False)
-            window["-Settings_gui-"].update(visible=False)
-            window["-Commission2_gui-"].update(visible=False)
-            window["-Commission3_gui-"].update(visible=False)
-            window["-Commission_gui-"].update(visible=False)
-            window["-Main_menu2_gui-"].update(visible=True)
-            window["-Manual_gui-"].update(visible=True)
-
-        elif event == '-Main_menu_button-':
-            window["-Manual_button-"].update(visible=True)
-            window["-Main_menu2_gui-"].update(visible=True)
-            window["-Settings_button-"].update(visible=True)
-            window["-Main_menu_button-"].update(visible=False)
-            window["-Commission-"].update(visible=False)
-
-            window["-Manual_gui-"].update(visible=False)
-            window["-Settings_gui-"].update(visible=False)
-            window["-Commission2_gui-"].update(visible=False)
-            window["-Commission3_gui-"].update(visible=False)
-            window["-Commission_gui-"].update(visible=False)
-            window["-Main_menu2_gui-"].update(visible=True)
-            window["-Main_menu_gui-"].update(visible=True)
-
-        elif event == sg.WINDOW_CLOSED or event == '-Exit-':
-            break
-        ## Fault events
-        elif event == '-B_fault-':
-            B_fault = False
-            window["-B_fault-"].update(visible=False)
-
-        elif event == '-Fb_fault-':
-            Fb_fault = False
-            window["-Fb_fault-"].update(visible=False)
-
-        elif event == '-Ag_fault-':
-            Ag_fault = False
-            window["-Ag_fault-"].update(visible=False)
-
-        elif event == '-Agoc_fault-':
-            Agoc_fault = False
-            window["-Agoc_fault-"].update(visible=False)
-
-        elif event == '-F_fault-':
-            F_fault = False
-            window["-F_fault-"].update(visible=False)
-
-        elif event == '-Al_fault-':
-            Al_fault = False
-            window["-Al_fault-"].update(visible=False)
-
-        elif event == '-E_fault-':
-            E_fault = False
-            window["-E_fault-"].update(visible=False)
-
-        elif event == '-I_fault-':
-            I_fault = False
-            window["-I_fault-"].update(visible=False)
-
-
-
-        ## Manual events
-        elif event == '-Infeed_manual-':
-            if not pid.auto_mode:
-                window["-Infeed_manual-"].update("Toggle Infeed to manual")
-                pid.set_auto_mode(True, last_output=int(os.environ["Infeed_max"]))
-            elif pid.auto_mode:
-                window["-Infeed_manual-"].update("Toggle Infeed to automatic")
-                pid.auto_mode = False
-
-        elif event == '-B_man-' and (B_status or not B_status and Ag_status and F_status) and not fault_check():
-            turn_port_on_off(not B_status, "Burner_status_output", '-B_man-', "Burner")
-            B_status = not B_status
-
-        elif event == '-Ag_man-' and not fault_check():
-            turn_port_on_off(not Ag_status, "Agitator_output", '-Ag_man-', "Agitator")
-            Ag_status = not Ag_status
-            if B_status:
-                B_status = False
-                turn_port_on_off(B_status, "Burner_status_output", '-B_man-', "Burner")
-
-        elif event == '-F_man-' and not fault_check():
-            turn_port_on_off(not F_status, "Fan_output", '-F_man-', "Fan")
-            F_status = not F_status
-            if B_status:
-                B_status = False
-                turn_port_on_off(B_status, "Burner_status_output", '-B_man-', "Burner")
-
-
-        elif event == '-Al_man-' and not fault_check():
-            turn_port_on_off(not Al_status, "Airlock_output", '-Al_man-', "Airlock")
-            Al_status = not Al_status
-
+            elif event == '-Machine_off-':
+                machine_status = False
+                window["-Status-"].update("Turn machine ON")
         else:
-            if machine_status:
-                pid.setpoint = int(os.environ["Temperature_setpoint"])
-                pid_loop(pid)
-            elif not machine_status:
-                pid.setpoint = 0
+            if is_busy:
+                # Optionally print a message saying the system is currently busy
+                sg.Popup("Please wait...", "Machine is turning on/off.", non_blocking=False)
+                if event == sg.WINDOW_CLOSED or event == '-Exit-':
+                    break
+            else:
+                # Handle your other events here
+                ## Data entry events
+                if event == '-SetPointb-':
+                    text = values["-SetPoint-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= int(os.environ["Max_temp"]):
+                            dotenv.set_key(dotenv_file, "Temperature_setpoint", text)
+                            pid.setpoint = number
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and " + os.environ["Max_temp"])
+
+                elif event == '-Infeed_maxb-':
+                    text = values["-Infeed_max-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 100:
+                            dotenv.set_key(dotenv_file, "Infeed_max", text)
+                            pid.output_limits = (0, number)
+                            # pid.output_limits((0, number))
+                            # print("successful test")
+                        else:
+                            # print("fail test")
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 100")
+
+                elif event == '-P_settingb-':
+                    text = values["-P_setting-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "P_controller", "-" + text)
+                            pid.Kp = -number
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-I_settingb-':
+                    text = values["-I_setting-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "I_controller", "-" + text)
+                            pid.Ki = -number
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-D_settingb-':
+                    text = values["-D_setting-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "D_controller", "-" + text)
+                            pid.Kd = -number
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-Fan_settingb-':
+                    text = values["-Fan_setting-"]
+                    try:
+                        number = int(text)
+                        if number >= 40 and number <= 60:
+                            dotenv.set_key(dotenv_file, "Fan_speed", text)
+                            fan_speed()
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 40 and 60")
+
+                elif event == '-AL2Fb-':
+                    text = values["-AL2F-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "Airlock_to_fan_delay_on", text)
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-F2AGb-':
+                    text = values["-F2AG-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "Fan_to_agitator_delay_on", text)
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-AG2Bb-':
+                    text = values["-AG2B-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "Agitator_to_burner_delay_on", text)
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-B2Ib-':
+                    text = values["-B2I-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "Burner_to_Infeed_delay_off", text)
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-I2AGb-':
+                    text = values["-I2AG-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "Infeed_to_agitator_off", text)
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-AG2Fb-':
+                    text = values["-AG2F-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "Agitator_to_fan_delay_off", text)
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-F2ALb-':
+                    text = values["-F2AL-"]
+                    try:
+                        number = int(text)
+                        if number >= 0 and number <= 1000:
+                            dotenv.set_key(dotenv_file, "Fan_to_airlock_delay_off", text)
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 0 and 1000")
+
+                elif event == '-Fb_maxb-':
+                    text = values["-Fb_max-"]
+                    try:
+                        number = int(text)
+                        if number >= 20 and number <= 55:
+                            dotenv.set_key(dotenv_file, "Flameback_temp_max", text)
+                        else:
+                            raise
+                    except:
+                        sg.popup_non_blocking("Please enter an integer between 20 and 55")
+
+                elif event == '-B_portb-' and F_status:
+                    IO_change("Burner_status_output", values["-B_port-"])
+
+                elif event == '-Ag_portb-':
+                    IO_change("Agitator_output", values["-Ag_port-"])
+
+                elif event == '-F_portb-':
+                    IO_change("Fan_output", values["-F_port-"])
+
+                elif event == '-Al_portb-':
+                    IO_change("Airlock_output", values["-Al_port-"])
+
+                elif event == '-Ir_portb-':
+                    IO_change("Infeed_reverse_output", values["-Ir_port-"])
+
+                elif event == '-I_portb-':
+                    IO_change("Infeed_output", values["-I_port-"])
+
+                elif event == '-Fs_portb-':
+                    IO_change("Fan_speed_output", values["-Fs_port-"])
+
+                elif event == '-Is_portb-':
+                    IO_change("Infeed_speed_output", values["-Is_port-"])
+
+                elif event == '-E_portb-':
+                    IO_change("Emergency_stop", values["-E_port-"])
+
+                elif event == '-Al_f_portb-':
+                    IO_change("Airlock_fault", values["-Al_f_port-"])
+
+                elif event == '-F_f_portb-':
+                    IO_change("Fan_fault", values["-F_f_port-"])
+
+                elif event == '-Ag_f_portb-':
+                    IO_change("Agitator_fault", values["-Ag_f_port-"])
+
+                elif event == '-Agoc_f_portb-':
+                    IO_change("Over_Current_fault", values["-Agoc_f_port-"])
+
+                elif event == '-I_f_portb-':
+                    IO_change("Infeed_fault", values["-I_f_port-"])
+
+                elif event == '-Im_temp_portb-':
+                    IO_change("Impact_temp_input", values["-Im_temp_port-"])
+
+                elif event == '-Fb_temp_portb-':
+                    IO_change("Flameback_temp_input", values["-Fb_temp_port-"])
+
+
+                ## Turn outputs On/Off
+                elif event == '-Infeed_enable-':
+                    turn_port_on_off(not I_status, "Infeed_output", '-Infeed_enable-', "Infeed")
+                    I_status = not I_status
+
+                elif event == '-Reverse_infeed-':
+                    turn_port_on_off(not Ir_status, "Infeed_reverse_output", '-Reverse_infeed-', "Infeed Reverse")
+                    sg.popup_non_blocking("Caution! Reversing infeed")
+                    Ir_status = not Ir_status
+
+
+                ## Change Pages
+                elif event == '-Recipes_button-':  ## not part of scope for now
+                    machine_status = True  # TODO replace with acutal code to open different page
+
+                elif event == '-Commission-':
+                    password = sg.popup_get_text("Password: ", password_char='*')
+                    if password and PasswordMatches(password, os.environ["password"]):
+                        window["-Commission-"].update(visible=False)
+                        window["-Main_menu_button-"].update(visible=True)
+                        window["-Manual_button-"].update(visible=True)
+                        window["-Settings_button-"].update(visible=True)
+
+                        window["-Main_menu_gui-"].update(visible=False)
+                        window["-Main_menu2_gui-"].update(visible=False)
+                        window["-Manual_gui-"].update(visible=False)
+                        window["-Settings_gui-"].update(visible=False)
+                        window["-Commission2_gui-"].update(visible=True)
+                        window["-Commission3_gui-"].update(visible=True)
+                        window["-Commission_gui-"].update(visible=True)
+                    else:
+                        sg.popup_non_blocking("Sorry that password is incorrect.")
+
+                elif event == '-Settings_button-':
+                    window["-Main_menu_button-"].update(visible=True)
+                    window["-Manual_button-"].update(visible=True)
+                    window["-Commission-"].update(visible=True)
+                    window["-Settings_button-"].update(visible=False)
+
+                    window["-Main_menu_gui-"].update(visible=False)
+                    window["-Manual_gui-"].update(visible=False)
+                    window["-Commission2_gui-"].update(visible=False)
+                    window["-Commission3_gui-"].update(visible=False)
+                    window["-Commission_gui-"].update(visible=False)
+                    window["-Main_menu2_gui-"].update(visible=True)
+                    window["-Settings_gui-"].update(visible=True)
+
+                elif event == '-Manual_button-':
+                    window["-Main_menu_button-"].update(visible=True)
+                    window["-Settings_button-"].update(visible=True)
+                    window["-Manual_button-"].update(visible=False)
+                    window["-Commission-"].update(visible=False)
+
+                    window["-Main_menu_gui-"].update(visible=False)
+                    window["-Settings_gui-"].update(visible=False)
+                    window["-Commission2_gui-"].update(visible=False)
+                    window["-Commission3_gui-"].update(visible=False)
+                    window["-Commission_gui-"].update(visible=False)
+                    window["-Main_menu2_gui-"].update(visible=True)
+                    window["-Manual_gui-"].update(visible=True)
+
+                elif event == '-Main_menu_button-':
+                    window["-Manual_button-"].update(visible=True)
+                    window["-Main_menu2_gui-"].update(visible=True)
+                    window["-Settings_button-"].update(visible=True)
+                    window["-Main_menu_button-"].update(visible=False)
+                    window["-Commission-"].update(visible=False)
+
+                    window["-Manual_gui-"].update(visible=False)
+                    window["-Settings_gui-"].update(visible=False)
+                    window["-Commission2_gui-"].update(visible=False)
+                    window["-Commission3_gui-"].update(visible=False)
+                    window["-Commission_gui-"].update(visible=False)
+                    window["-Main_menu2_gui-"].update(visible=True)
+                    window["-Main_menu_gui-"].update(visible=True)
+
+                elif event == sg.WINDOW_CLOSED or event == '-Exit-':
+                    break
+                ## Fault events
+                elif event == '-B_fault-':
+                    B_fault = False
+                    window["-B_fault-"].update(visible=False)
+
+                elif event == '-Fb_fault-':
+                    Fb_fault = False
+                    window["-Fb_fault-"].update(visible=False)
+
+                elif event == '-Ag_fault-':
+                    Ag_fault = False
+                    window["-Ag_fault-"].update(visible=False)
+
+                elif event == '-Agoc_fault-':
+                    Agoc_fault = False
+                    window["-Agoc_fault-"].update(visible=False)
+
+                elif event == '-F_fault-':
+                    F_fault = False
+                    window["-F_fault-"].update(visible=False)
+
+                elif event == '-Al_fault-':
+                    Al_fault = False
+                    window["-Al_fault-"].update(visible=False)
+
+                elif event == '-E_fault-':
+                    E_fault = False
+                    window["-E_fault-"].update(visible=False)
+
+                elif event == '-I_fault-':
+                    I_fault = False
+                    window["-I_fault-"].update(visible=False)
+
+
+
+                ## Manual events
+                elif event == '-Infeed_manual-':
+                    if not pid.auto_mode:
+                        window["-Infeed_manual-"].update("Toggle Infeed to manual")
+                        pid.set_auto_mode(True, last_output=int(os.environ["Infeed_max"]))
+                    elif pid.auto_mode:
+                        window["-Infeed_manual-"].update("Toggle Infeed to automatic")
+                        pid.auto_mode = False
+
+                elif event == '-B_man-' and (B_status or not B_status and Ag_status and F_status) and not fault_check():
+                    turn_port_on_off(not B_status, "Burner_status_output", '-B_man-', "Burner")
+                    B_status = not B_status
+
+                elif event == '-Ag_man-' and not fault_check():
+                    turn_port_on_off(not Ag_status, "Agitator_output", '-Ag_man-', "Agitator")
+                    Ag_status = not Ag_status
+                    if B_status:
+                        B_status = False
+                        turn_port_on_off(B_status, "Burner_status_output", '-B_man-', "Burner")
+
+                elif event == '-F_man-' and not fault_check():
+                    turn_port_on_off(not F_status, "Fan_output", '-F_man-', "Fan")
+                    F_status = not F_status
+                    if B_status:
+                        B_status = False
+                        turn_port_on_off(B_status, "Burner_status_output", '-B_man-', "Burner")
+
+
+                elif event == '-Al_man-' and not fault_check():
+                    turn_port_on_off(not Al_status, "Airlock_output", '-Al_man-', "Airlock")
+                    Al_status = not Al_status
+
+                else:
+                    if machine_status:
+                        pid.setpoint = int(os.environ["Temperature_setpoint"])
+                        pid_loop(pid)
+                    elif not machine_status:
+                        pid.setpoint = 0
+
 
 
 if __name__ == "__main__":
