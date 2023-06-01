@@ -895,6 +895,7 @@ def main():
 
         elif event == '-Reverse_infeed-':
             turn_port_on_off(not Ir_status, "Infeed_reverse_output", '-Reverse_infeed-', "Infeed Reverse")
+            sg.popup_non_blocking("Caution! Reversing infeed")
             Ir_status = not Ir_status
 
 
