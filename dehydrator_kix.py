@@ -292,6 +292,11 @@ gui_bottom_buttons = [
         sg.Button("Commission Settings", key="-Commission-", font=generic_text_font, size=main_buttons, visible=False),
     ]
 ]
+gui_bottom_right_buttons = [
+    [
+        sg.Button("Exit", key="-Exit-", font=generic_text_font, size=main_buttons, visible=True),
+    ]
+]
 gui_layout_right = [
     [
         sg.Column(gui_temp_1, size=(w / 6, h * 2 / 5)),
@@ -332,7 +337,8 @@ gui_layout = [
         ## TODO add indication for each element
     ],
     [
-        sg.Column(gui_bottom_buttons, size=(w, h * 1 / 5)),
+        sg.Column(gui_bottom_buttons, size=(w * 3 / 4, h * 1 / 5)),
+        sg.Column(gui_bottom_right_buttons, size=(w * 1 / 4, h * 1 / 5))
     ],
 ]
 
@@ -964,7 +970,8 @@ def main():
             window["-Main_menu2_gui-"].update(visible=True)
             window["-Main_menu_gui-"].update(visible=True)
 
-
+        elif event == sg.WINDOW_CLOSED or event == '-Exit-':
+            break
         ## Fault events
         elif event == '-B_fault-':
             B_fault = False
