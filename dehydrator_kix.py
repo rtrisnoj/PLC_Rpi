@@ -51,12 +51,18 @@ Ir_status = False
 
 fault_lowhigh = rpiplc.HIGH
 
+# Define a minimum window size
+min_w, min_h = 800, 600
+
 window_sizing = sg.Window("testing", layout=[[sg.Text("Test")]], finalize=True, alpha_channel=0, )
 window_sizing.Maximize()
-w, h = sg.Window.get_screen_dimensions(window_sizing)
+
+# Get screen dimensions
+screen_w, screen_h = sg.Window.get_screen_dimensions(window_sizing)
 window_sizing.close()
-w -= 40
-h -= 70
+# Compute final width and height, considering minimum size
+w = max(screen_w - 40, min_w)
+h = max(screen_h - 70, min_h)
 
 generic_text_size = (20, 2)
 generic_text_font = ("calibri", 14)
@@ -87,13 +93,13 @@ gui_settings_1 = [
     [sg.Text("Fan Speed: ", font=generic_text_font, size=generic_text_size)],
 ]
 gui_settings_2 = [
-    [sg.Input(str(int(os.environ["P_controller"]) * -1), key='-P_setting-', size=input_size, font=header_text_font),
+    [sg.Input(str(int(os.environ["P_controller"]) * -1), key='-P_setting-', enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-P_settingb-", font=generic_text_font)],
-    [sg.Input(str(int(os.environ["I_controller"]) * -1), key='-I_setting-', size=input_size, font=header_text_font),
+    [sg.Input(str(int(os.environ["I_controller"]) * -1), key='-I_setting-', enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-I_settingb-", font=generic_text_font)],
-    [sg.Input(str(int(os.environ["D_controller"]) * -1), key='-D_setting-', size=input_size, font=header_text_font),
+    [sg.Input(str(int(os.environ["D_controller"]) * -1), key='-D_setting-', enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-D_settingb-", font=generic_text_font)],
-    [sg.Input(str(int(os.environ["Fan_speed"])), key="-Fan_setting-", size=input_size, font=header_text_font),
+    [sg.Input(str(int(os.environ["Fan_speed"])), key="-Fan_setting-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Fan_settingb-", font=generic_text_font)],
 ]
 gui_settings = [
@@ -118,23 +124,23 @@ gui_commission_1 = [
 ]
 gui_commission_2 = [
     [sg.Text("", font=header_text_font, size=header_text_size)],
-    [sg.Input(os.environ["Flameback_temp_max"], key="-Fb_max-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Flameback_temp_max"], key="-Fb_max-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Fb_maxb-", font=generic_text_font)],
     [sg.Text("", font=header_text_font, size=header_text_size)],
-    [sg.Input(os.environ["Airlock_to_fan_delay_on"], key="-AL2F-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Airlock_to_fan_delay_on"], key="-AL2F-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-AL2Fb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_to_agitator_delay_on"], key="-F2AG-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Fan_to_agitator_delay_on"], key="-F2AG-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-F2AGb-", font=generic_text_font)],
-    [sg.Input(os.environ["Agitator_to_burner_delay_on"], key="-AG2B-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Agitator_to_burner_delay_on"], key="-AG2B-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-AG2Bb-", font=generic_text_font)],
     [sg.Text("", font=header_text_font, size=header_text_size)],
-    [sg.Input(os.environ["Burner_to_Infeed_delay_off"], key="-B2I-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Burner_to_Infeed_delay_off"], key="-B2I-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-B2Ib-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_to_agitator_off"], key="-I2AG-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Infeed_to_agitator_off"], key="-I2AG-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-I2AGb-", font=generic_text_font)],
-    [sg.Input(os.environ["Agitator_to_fan_delay_off"], key="-AG2F-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Agitator_to_fan_delay_off"], key="-AG2F-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-AG2Fb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_to_airlock_delay_off"], key="-F2AL-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Fan_to_airlock_delay_off"], key="-F2AL-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-F2ALb-", font=generic_text_font)],
 ]
 gui_commission = [
@@ -169,42 +175,42 @@ gui_commission3_1 = [
 ]
 gui_commission2_2 = [
     [sg.Text("", font=title_text_font)],
-    [sg.Input(os.environ["Burner_status_output"], key="-B_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Burner_status_output"], key="-B_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-B_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Agitator_output"], key="-Ag_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Agitator_output"], key="-Ag_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Ag_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_output"], key="-F_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Fan_output"], key="-F_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-F_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Airlock_output"], key="-Al_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Airlock_output"], key="-Al_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Al_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_reverse_output"], key="-Ir_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Infeed_reverse_output"], key="-Ir_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Ir_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_output"], key="-I_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Infeed_output"], key="-I_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-I_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_speed_output"], key="-Fs_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Fan_speed_output"], key="-Fs_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Fs_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_speed_output"], key="-Is_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Infeed_speed_output"], key="-Is_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Is_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Auto_off_safety_output"], key="-Aos_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Auto_off_safety_output"], key="-Aos_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Aos_portb-", font=generic_text_font)],
 ]
 gui_commission3_2 = [
     [sg.Text("", font=title_text_font)],
-    [sg.Input(os.environ["Emergency_stop"], key="-E_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Emergency_stop"], key="-E_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-E_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Airlock_fault"], key="-Al_f_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Airlock_fault"], key="-Al_f_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Al_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_fault"], key="-F_f_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Fan_fault"], key="-F_f_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-F_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Agitator_fault"], key="-Ag_f_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Agitator_fault"], key="-Ag_f_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Ag_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Over_Current_fault"], key="-Agoc_f_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Over_Current_fault"], key="-Agoc_f_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Agoc_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_fault"], key="-I_f_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Infeed_fault"], key="-I_f_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-I_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Impact_temp_input"], key="-Im_temp_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Impact_temp_input"], key="-Im_temp_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Im_temp_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Flameback_temp_input"], key="-Fb_temp_port-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Flameback_temp_input"], key="-Fb_temp_port-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Fb_temp_portb-", font=generic_text_font)],
 
 ]
@@ -269,7 +275,7 @@ gui_temp_2 = [
 gui_temp_3 = [
     [sg.Text("", font=header_text_font)],
     [sg.Text("Set point temp", font=generic_text_font, size=generic_text_size)],
-    [sg.Input(os.environ["Temperature_setpoint"], key='-SetPoint-', size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Temperature_setpoint"], key='-SetPoint-', enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-SetPointb-")],
 ]
 gui_infeed_1 = [
@@ -280,7 +286,7 @@ gui_infeed_1 = [
 gui_infeed_2 = [
     [sg.Text(key="-Infeed_speed-", font=generic_text_font, size=generic_text_size)],
     [sg.Button("Toggle Infeed to manual", key="-Infeed_manual-", font=generic_text_font, size=infeed_button_size)],
-    [sg.Input(os.environ["Infeed_max"], key="-Infeed_max-", size=input_size, font=header_text_font),
+    [sg.Input(os.environ["Infeed_max"], key="-Infeed_max-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Infeed_maxb-")],
 ]
 gui_bottom_buttons = [
@@ -290,6 +296,20 @@ gui_bottom_buttons = [
         sg.Button("Settings", key="-Settings_button-", font=generic_text_font, size=main_buttons),
         sg.Button("Manual operation", key="-Manual_button-", font=generic_text_font, size=main_buttons),
         sg.Button("Commission Settings", key="-Commission-", font=generic_text_font, size=main_buttons, visible=False),
+    ]
+]
+gui_bottom_right_buttons = [
+    [
+        sg.Button("Exit", key="-Exit-", font=generic_text_font, size=main_buttons, visible=True),
+    ]
+]
+gui_bottom_keyboard = [
+    [
+        sg.Button(str(i), key="-KEYBOARD" + str(i) + "-", size=(5, 2)) for i in range(10) 
+        
+    ] +
+    [
+        sg.Button('Reset', key='-Reset-', size=(10,2))
     ]
 ]
 gui_layout_right = [
@@ -332,8 +352,12 @@ gui_layout = [
         ## TODO add indication for each element
     ],
     [
-        sg.Column(gui_bottom_buttons, size=(w, h * 1 / 5)),
+        sg.Column(gui_bottom_buttons, size=(w * 3 / 4, h * 1 / 10)),
+        sg.Column(gui_bottom_right_buttons, size=(w * 1 / 4, h * 1 / 10))
     ],
+    [
+            sg.Column(gui_bottom_keyboard, size=(w, h* 1 / 10))   # Adjust the size according to your requirements
+    ]
 ]
 
 window = sg.Window(title="AKT-International Dehydrator Program", layout=gui_layout,
@@ -636,6 +660,7 @@ def main():
     global Fb_fault
 
     machine_status = False
+    active_input = None
     pid = PID(int(os.environ["P_controller"]), int(os.environ["I_controller"]), int(os.environ["D_controller"]),
               int(os.environ["Temperature_setpoint"]))
     pid.proportional_on_measurement = True
@@ -660,10 +685,24 @@ def main():
         elif event == '-Status-':
             if not machine_status:
                 if not fault_check():
+                    # reset variables
+                    Al_status = False
+                    F_status = False
+                    Ag_status = False
+                    B_status = False
+                    I_status = False
                     window["-Status-"].update("Turning ON")
+                    sg.Popup("Please wait...", "Machine is turning on.", non_blocking=False)
                     window.perform_long_operation(turn_machine_on, "-Machine_on-")
             elif machine_status:
+                # reset variables
+                Al_status = False
+                F_status = False
+                Ag_status = False
+                B_status = False
+                I_status = False
                 window["-Status-"].update("Turning OFF")
+                sg.Popup("Please wait...", "Machine is turning off.", non_blocking=False)
                 window.perform_long_operation(turn_machine_off, "-Machine_off-")
 
         elif event == '-Machine_on-':
@@ -673,7 +712,6 @@ def main():
         elif event == '-Machine_off-':
             machine_status = False
             window["-Status-"].update("Turn machine ON")
-
 
         ## Data entry events
         elif event == '-SetPointb-':
@@ -895,6 +933,7 @@ def main():
 
         elif event == '-Reverse_infeed-':
             turn_port_on_off(not Ir_status, "Infeed_reverse_output", '-Reverse_infeed-', "Infeed Reverse")
+            sg.popup_non_blocking("Caution! Reversing infeed")
             Ir_status = not Ir_status
 
 
@@ -963,7 +1002,8 @@ def main():
             window["-Main_menu2_gui-"].update(visible=True)
             window["-Main_menu_gui-"].update(visible=True)
 
-
+        elif event == sg.WINDOW_CLOSED or event == '-Exit-':
+            break
         ## Fault events
         elif event == '-B_fault-':
             B_fault = False
@@ -1030,7 +1070,19 @@ def main():
         elif event == '-Al_man-' and not fault_check():
             turn_port_on_off(not Al_status, "Airlock_output", '-Al_man-', "Airlock")
             Al_status = not Al_status
-
+    
+        if event in ('-SetPoint-', '-Infeed_max-', '-P_setting-', '-I_setting-', '-D_setting-', '-Fan_setting-', '-Fb_max-', '-AL2F-', '-F2AG-', '-AG2B-', '-B2I-', '-I2AG-', '-AG2F-', '-F2AL-', '-B_port-', '-Ag_port-', '-F_port-', '-Al_port-', '-Ir_port-', '-I_port-', '-Fs_port-', '-Is_port-', '-Aos_port-', '-E_port-', '-Al_f_port-', '-F_f_port-', '-Ag_f_port-', '-Agoc_f_port-', '-I_f_port-', '-Im_temp_port-', '-Fb_temp_port-' ):
+            active_input = event
+        elif "-KEYBOARD" in event:
+            digit = event.replace("-KEYBOARD", "").replace("-", "")
+                
+            # Only do something if an input is selected
+            if active_input is not None:
+                current_value = values[active_input]
+                window[active_input].update(current_value + digit)
+        elif event =='-Reset-':
+            if active_input is not None:
+                window[active_input].update('')
         else:
             if machine_status:
                 pid.setpoint = int(os.environ["Temperature_setpoint"])
