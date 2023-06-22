@@ -284,10 +284,10 @@ gui_infeed_1 = [
     [sg.Button("Turn on Infeed Reverse", key="-Reverse_infeed-", font=generic_text_font, size=infeed_button_size)],
 ]
 gui_infeed_2 = [
-    [sg.Text(key="-Infeed_speed-", font=generic_text_font, size=generic_text_size)],
-    [sg.Button("Toggle Infeed to manual", key="-Infeed_manual-", font=generic_text_font, size=infeed_button_size)],
     [sg.Input(os.environ["Infeed_max"], key="-Infeed_max-", enable_events = True, size=input_size, font=header_text_font),
      sg.Button("Confirm", size=confirm_size, key="-Infeed_maxb-")],
+    [sg.Text(key="-Infeed_speed-", font=generic_text_font, size=generic_text_size)],
+    [sg.Button("Toggle Infeed to manual", key="-Infeed_manual-", font=generic_text_font, size=infeed_button_size)],
 ]
 gui_bottom_buttons = [
     [
@@ -300,7 +300,9 @@ gui_bottom_buttons = [
 ]
 gui_bottom_right_buttons = [
     [
+        sg.Text(''),
         sg.Button("Exit", key="-Exit-", font=generic_text_font, size=main_buttons, visible=True),
+        sg.Text(''),
     ]
 ]
 gui_bottom_keyboard = [
@@ -537,7 +539,7 @@ def read_inputs():
     if len(flameback_loop) >= ma_length:
         flameback_loop.pop(0) # remove oldest data
     flameback_loop.append(rpiplc.analog_read(os.environ["Flameback_temp_input"]) * 1.6 / 3)
-    flameback_temp = sum(flameback_loop) / len(flameback_loop)
+    flameback_temp = sum(flameback_loop) / len(flameback_loop) * 10
     # print(flameback_loop)
     # Update GUI for flameback temperature
     window["-Flameback_temp-"].update(round(flameback_temp, 1))
@@ -546,7 +548,7 @@ def read_inputs():
     if len(impact_temp_loop) >= ma_length:
         impact_temp_loop.pop(0) # remove oldest data
     impact_temp_loop.append(rpiplc.analog_read(os.environ["Impact_temp_input"]) * 1.6 / 3)
-    impact_temp = sum(impact_temp_loop) / len(impact_temp_loop)
+    impact_temp = sum(impact_temp_loop) / len(impact_temp_loop) * 10
     window["-Impact_temp-"].update(round(impact_temp, 1))
 
     ## Check if temperature is over set limit
