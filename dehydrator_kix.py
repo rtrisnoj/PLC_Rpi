@@ -67,18 +67,20 @@ h = max(screen_h - 70, min_h)
 generic_text_size = (20, 2)
 generic_text_font = ("calibri", 14)
 
-com_text_size = (20, 1)
-com_text_font = ("calibri", 12)
+com_text_size = (20, 2)
+com_text_font = ("calibri", 11)
 
 header_text_size = (20, 1)
 header_text_font = ("calibri", 20)
-
+smaller_header_text_font =  ("calibri", 16)
 title_text_font = ("calibri", 25)
 
 main_buttons = (30, 3)
+smaller_main_buttons = (18,2)
 input_size = (5, 1)
 confirm_size = (9, 1)
 generic_button_size = (12, 3)
+smaller_generic_button_size = (16, 2)
 infeed_button_size = (20, 3)
 
 gui_main_left = [
@@ -110,13 +112,13 @@ gui_settings = [
     ],
 ]
 gui_commission_1 = [
-    [sg.Text("General settings", font=header_text_font, size=header_text_size)],
+    [sg.Text("General settings", font=smaller_header_text_font, size=header_text_size)],
     [sg.Text("Flameback Max Temp: ", font=com_text_font, size=com_text_size)],
-    [sg.Text("Turning on Timing", font=header_text_font, size=header_text_size)],
+    [sg.Text("Turning on Timing", font=smaller_header_text_font, size=header_text_size)],
     [sg.Text("Airlock to Fan delay: ", font=com_text_font, size=com_text_size)],
     [sg.Text("Fan to Agitator delay: ", font=com_text_font, size=com_text_size)],
     [sg.Text("Agitator to Burner delay: ", font=com_text_font, size=com_text_size)],
-    [sg.Text("Turning off timing", font=header_text_font, size=header_text_size)],
+    [sg.Text("Turning off timing", font=smaller_header_text_font, size=header_text_size)],
     [sg.Text("Burner to Infeed delay: ", font=com_text_font, size=com_text_size)],
     [sg.Text("Infeed to Agitator delay: ", font=com_text_font, size=com_text_size)],
     [sg.Text("Agitator to Fan delay: ", font=com_text_font, size=com_text_size)],
@@ -124,24 +126,24 @@ gui_commission_1 = [
 ]
 gui_commission_2 = [
     [sg.Text("", font=header_text_font, size=header_text_size)],
-    [sg.Input(os.environ["Flameback_temp_max"], key="-Fb_max-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Fb_maxb-", font=generic_text_font)],
+    [sg.Input(os.environ["Flameback_temp_max"], key="-Fb_max-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Fb_maxb-", font=com_text_font)],
     [sg.Text("", font=header_text_font, size=header_text_size)],
-    [sg.Input(os.environ["Airlock_to_fan_delay_on"], key="-AL2F-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-AL2Fb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_to_agitator_delay_on"], key="-F2AG-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-F2AGb-", font=generic_text_font)],
-    [sg.Input(os.environ["Agitator_to_burner_delay_on"], key="-AG2B-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-AG2Bb-", font=generic_text_font)],
+    [sg.Input(os.environ["Airlock_to_fan_delay_on"], key="-AL2F-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-AL2Fb-", font=com_text_font)],
+    [sg.Input(os.environ["Fan_to_agitator_delay_on"], key="-F2AG-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-F2AGb-", font=com_text_font)],
+    [sg.Input(os.environ["Agitator_to_burner_delay_on"], key="-AG2B-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-AG2Bb-", font=com_text_font)],
     [sg.Text("", font=header_text_font, size=header_text_size)],
-    [sg.Input(os.environ["Burner_to_Infeed_delay_off"], key="-B2I-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-B2Ib-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_to_agitator_off"], key="-I2AG-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-I2AGb-", font=generic_text_font)],
-    [sg.Input(os.environ["Agitator_to_fan_delay_off"], key="-AG2F-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-AG2Fb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_to_airlock_delay_off"], key="-F2AL-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-F2ALb-", font=generic_text_font)],
+    [sg.Input(os.environ["Burner_to_Infeed_delay_off"], key="-B2I-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-B2Ib-", font=com_text_font)],
+    [sg.Input(os.environ["Infeed_to_agitator_off"], key="-I2AG-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-I2AGb-", font=com_text_font)],
+    [sg.Input(os.environ["Agitator_to_fan_delay_off"], key="-AG2F-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-AG2Fb-", font=com_text_font)],
+    [sg.Input(os.environ["Fan_to_airlock_delay_off"], key="-F2AL-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-F2ALb-", font=com_text_font)],
 ]
 gui_commission = [
     [sg.Text("", font=title_text_font)],
@@ -175,43 +177,43 @@ gui_commission3_1 = [
 ]
 gui_commission2_2 = [
     [sg.Text("", font=title_text_font)],
-    [sg.Input(os.environ["Burner_status_output"], key="-B_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-B_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Agitator_output"], key="-Ag_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Ag_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_output"], key="-F_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-F_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Airlock_output"], key="-Al_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Al_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_reverse_output"], key="-Ir_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Ir_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_output"], key="-I_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-I_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_speed_output"], key="-Fs_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Fs_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_speed_output"], key="-Is_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Is_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Auto_off_safety_output"], key="-Aos_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Aos_portb-", font=generic_text_font)],
+    [sg.Input(os.environ["Burner_status_output"], key="-B_port-", enable_events = True, size=input_size,  font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-B_portb-",  font=com_text_font)],
+    [sg.Input(os.environ["Agitator_output"], key="-Ag_port-", enable_events = True, size=input_size,  font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Ag_portb-",  font=com_text_font)],
+    [sg.Input(os.environ["Fan_output"], key="-F_port-", enable_events = True, size=input_size,  font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-F_portb-",  font=com_text_font)],
+    [sg.Input(os.environ["Airlock_output"], key="-Al_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Al_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Infeed_reverse_output"], key="-Ir_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Ir_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Infeed_output"], key="-I_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-I_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Fan_speed_output"], key="-Fs_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Fs_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Infeed_speed_output"], key="-Is_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Is_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Auto_off_safety_output"], key="-Aos_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Aos_portb-", font=com_text_font)],
 ]
 gui_commission3_2 = [
     [sg.Text("", font=title_text_font)],
-    [sg.Input(os.environ["Emergency_stop"], key="-E_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-E_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Airlock_fault"], key="-Al_f_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Al_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Fan_fault"], key="-F_f_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-F_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Agitator_fault"], key="-Ag_f_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Ag_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Over_Current_fault"], key="-Agoc_f_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Agoc_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Infeed_fault"], key="-I_f_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-I_f_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Impact_temp_input"], key="-Im_temp_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Im_temp_portb-", font=generic_text_font)],
-    [sg.Input(os.environ["Flameback_temp_input"], key="-Fb_temp_port-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Fb_temp_portb-", font=generic_text_font)],
+    [sg.Input(os.environ["Emergency_stop"], key="-E_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-E_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Airlock_fault"], key="-Al_f_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Al_f_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Fan_fault"], key="-F_f_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-F_f_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Agitator_fault"], key="-Ag_f_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Ag_f_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Over_Current_fault"], key="-Agoc_f_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Agoc_f_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Infeed_fault"], key="-I_f_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-I_f_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Impact_temp_input"], key="-Im_temp_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Im_temp_portb-", font=com_text_font)],
+    [sg.Input(os.environ["Flameback_temp_input"], key="-Fb_temp_port-", enable_events = True, size=input_size, font=com_text_font),
+     sg.Button("Confirm", size=confirm_size, key="-Fb_temp_portb-", font=com_text_font)],
 
 ]
 gui_recipes = [
@@ -226,25 +228,25 @@ gui_manual_1 = [
 ]
 gui_manual_2 = [
     [
-        sg.Button("Turn on Burner", key="-B_man-", font=generic_text_font, size=generic_button_size),
+        sg.Button("Turn on Burner", key="-B_man-", font=generic_text_font, size=smaller_generic_button_size),
         sg.Button("Clear Machine Over Temperature Fault", key="-B_fault-", font=generic_text_font,
                   size=generic_button_size, visible=False),
         sg.Button("Clear Flameback Fault", key="-Fb_fault-", font=generic_text_font, size=generic_button_size,
                   visible=False),
     ],
     [
-        sg.Button("Turn on Agitator", key="-Ag_man-", font=generic_text_font, size=generic_button_size),
+        sg.Button("Turn on Agitator", key="-Ag_man-", font=generic_text_font, size=smaller_generic_button_size),
         sg.Button("Clear Agitator Fault", key="-Ag_fault-", font=generic_text_font, size=generic_button_size,
                   visible=False),
         sg.Button("Reset Agitator Over Current Fault", key="-Agoc_fault-", font=generic_text_font,
                   size=generic_button_size, visible=False),
     ],
     [
-        sg.Button("Turn on Fan", key="-F_man-", font=generic_text_font, size=generic_button_size),
+        sg.Button("Turn on Fan", key="-F_man-", font=generic_text_font, size=smaller_generic_button_size),
         sg.Button("Clear Fan Fault", key="-F_fault-", font=generic_text_font, size=generic_button_size, visible=False),
     ],
     [
-        sg.Button("Turn on Airlock", key="-Al_man-", font=generic_text_font, size=generic_button_size),
+        sg.Button("Turn on Airlock", key="-Al_man-", font=generic_text_font, size=smaller_generic_button_size),
         sg.Button("Clear Airlock Fault", key="-Al_fault-", font=generic_text_font, size=generic_button_size,
                   visible=False),
     ],
@@ -285,24 +287,25 @@ gui_infeed_1 = [
 ]
 gui_infeed_2 = [
     [sg.Input(os.environ["Infeed_max"], key="-Infeed_max-", enable_events = True, size=input_size, font=header_text_font),
-     sg.Button("Confirm", size=confirm_size, key="-Infeed_maxb-")],
+      sg.Button("Confirm", size=confirm_size, key="-Infeed_maxb-")],
     [sg.Text(key="-Infeed_speed-", font=generic_text_font, size=generic_text_size)],
     [sg.Button("Toggle Infeed to manual", key="-Infeed_manual-", font=generic_text_font, size=infeed_button_size)],
+    
 ]
 gui_bottom_buttons = [
     [
-        sg.Button("Main Page", key="-Main_menu_button-", font=generic_text_font, size=main_buttons, visible=False),
-        sg.Button("Recipes", key="-Recipes_button-", font=generic_text_font, size=main_buttons, visible=False),
-        sg.Button("Settings", key="-Settings_button-", font=generic_text_font, size=main_buttons),
-        sg.Button("Manual operation", key="-Manual_button-", font=generic_text_font, size=main_buttons),
-        sg.Button("Commission Settings", key="-Commission-", font=generic_text_font, size=main_buttons, visible=False),
+        sg.Button("Main Page", key="-Main_menu_button-", font=generic_text_font, size=smaller_main_buttons, visible=False),
+        sg.Button("Recipes", key="-Recipes_button-", font=generic_text_font, size=smaller_main_buttons, visible=False),
+        sg.Button("Settings", key="-Settings_button-", font=generic_text_font, size=smaller_main_buttons),
+        sg.Button("Manual operation", key="-Manual_button-", font=generic_text_font, size=smaller_main_buttons),
+        sg.Button("Commission Settings", key="-Commission-", font=generic_text_font, size=smaller_main_buttons, visible = False),
     ]
 ]
 gui_bottom_right_buttons = [
     [
-        sg.Text(''),
-        sg.Button("Exit", key="-Exit-", font=generic_text_font, size=main_buttons, visible=True),
-        sg.Text(''),
+	sg.Text(''),
+        sg.Button("Exit", key="-Exit-", font=generic_text_font, size=smaller_main_buttons, visible=True),
+	sg.Text(''),
     ]
 ]
 gui_bottom_keyboard = [
